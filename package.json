@@ -1,0 +1,25 @@
+{
+  "name": "lorentzburn",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "workspaces": [
+    "engine",
+    "frontend"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SamGon24/lorentzburn.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SamGon24/lorentzburn/issues"
+  },
+  "homepage": "https://github.com/SamGon24/lorentzburn#readme"
+}

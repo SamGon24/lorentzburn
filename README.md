@@ -20,22 +20,22 @@ Multiplayer (Node.js + Socket.io) is planned as a later phase.
 
 ## Project Structure
 
-\`\`\`
+```
 lorentzburn/
 ├── engine/      # Core game logic (board, ships, attack resolution)
 ├── frontend/    # React application
 └── README.md
-\`\`\`
+```
 
 ## Status
 
-Early development —> core game engine in progress.
+Early development, core game engine in progress.
 
 ## Getting Started
 
-\`\`\`bash
+```bash
 npm install
-\`\`\`
+```
 
 More setup instructions coming as the project develops.
 

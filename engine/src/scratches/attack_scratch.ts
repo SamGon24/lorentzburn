@@ -1,7 +1,7 @@
-import { Board, CellStatus } from './board';
-import { Ship } from './ship';
-import { Fleet } from './fleet';
-import { resolveAttack } from './attack';
+import { Board, CellStatus } from '../board';
+import { Ship } from '../ship';
+import { Fleet } from '../fleet';
+import { resolveAttack } from '../attack';
 
 const board = new Board(10);
 const fleet = new Fleet(board);

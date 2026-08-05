@@ -1,4 +1,4 @@
-import { Board, CellStatus } from './board';
+import { Board, CellStatus } from '../board';
 
 const board = new Board(10);
 

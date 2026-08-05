@@ -1,5 +1,6 @@
 import { Board } from './board';
 import { Ship, ShipCoordinate } from './ship';
+import { GameRules, DEFAULT_GAME_RULES } from './game_rules';
 
 export const FLEET_COMPOSITION = [
   { name: 'Dreadnought', size: 5 },
@@ -21,11 +22,12 @@ function getNeighbors(coord: ShipCoordinate): ShipCoordinate[] {
   return neighbors;
 }
 
-// true if every cell of the ship is in bounds, unoccupied, and not adjacent to another ship
+// true if every cell of the ship is in bounds, unoccupied, and (if strictAdjacency is on) not adjacent to another ship
 export function canPlaceShip(
   board: Board,
   ship: Ship,
-  existingShips: Ship[]
+  existingShips: Ship[],
+  rules: GameRules = DEFAULT_GAME_RULES
 ): boolean {
   for (const coord of ship.coordinates) {
     if (!board.isInBounds(coord.row, coord.col)) {
@@ -41,10 +43,12 @@ export function canPlaceShip(
       return false;
     }
 
-    const neighbors = getNeighbors(coord);
-    for (const n of neighbors) {
-      if (occupiesCell(n.row, n.col)) {
-        return false;
+    if (rules.strictAdjacency) {
+      const neighbors = getNeighbors(coord);
+      for (const n of neighbors) {
+        if (occupiesCell(n.row, n.col)) {
+          return false;
+        }
       }
     }
   }
@@ -54,15 +58,17 @@ export function canPlaceShip(
 export class Fleet {
   private board: Board;
   private ships: Ship[]; // ships placed so far
+  private rules: GameRules; // active game rules for this fleet
 
-  constructor(board: Board) {
+  constructor(board: Board, rules: GameRules = DEFAULT_GAME_RULES) {
     this.board = board;
     this.ships = [];
+    this.rules = rules;
   }
 
   // validates and adds a ship to the fleet, throws if the placement is invalid
   placeShip(ship: Ship): void {
-    if (!canPlaceShip(this.board, ship, this.ships)) {
+    if (!canPlaceShip(this.board, ship, this.ships, this.rules)) {
       throw new Error(`Invalid placement for ship: ${ship.name}`);
     }
     this.ships.push(ship);

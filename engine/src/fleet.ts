@@ -9,6 +9,7 @@ export const FLEET_COMPOSITION = [
   { name: 'Interceptor', size: 2 },
 ];
 
+// returns the 8 surrounding cells of a coordinate, used to enforce spacing between ships
 function getNeighbors(coord: ShipCoordinate): ShipCoordinate[] {
   const neighbors: ShipCoordinate[] = [];
   for (let dRow = -1; dRow <= 1; dRow++) {
@@ -20,6 +21,7 @@ function getNeighbors(coord: ShipCoordinate): ShipCoordinate[] {
   return neighbors;
 }
 
+// true if every cell of the ship is in bounds, unoccupied, and not adjacent to another ship
 export function canPlaceShip(
   board: Board,
   ship: Ship,
@@ -51,13 +53,14 @@ export function canPlaceShip(
 
 export class Fleet {
   private board: Board;
-  private ships: Ship[];
+  private ships: Ship[]; // ships placed so far
 
   constructor(board: Board) {
     this.board = board;
     this.ships = [];
   }
 
+  // validates and adds a ship to the fleet, throws if the placement is invalid
   placeShip(ship: Ship): void {
     if (!canPlaceShip(this.board, ship, this.ships)) {
       throw new Error(`Invalid placement for ship: ${ship.name}`);
@@ -65,14 +68,17 @@ export class Fleet {
     this.ships.push(ship);
   }
 
+  // read-only view of the placed ships
   getShips(): ReadonlyArray<Ship> {
     return this.ships;
   }
 
+  // whether every ship in FLEET_COMPOSITION has been placed
   isFullyPlaced(): boolean {
     return this.ships.length === FLEET_COMPOSITION.length;
   }
 
+  // whether every placed ship has been sunk
   allSunk(): boolean {
     return this.ships.every((ship) => ship.isSunk());
   }

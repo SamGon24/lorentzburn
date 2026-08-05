@@ -3,6 +3,7 @@ import { VisibleCell } from '../fog_of_war';
 
 // Simplest possible opponent, fires at a random unattacked cell every turn
 export class RandomHunterOpponent implements Opponent {
+  // picks a uniformly random unattacked cell
   async getMove(boardView: VisibleCell[][]): Promise<Move> {
     const validCells: Move[] = [];
 

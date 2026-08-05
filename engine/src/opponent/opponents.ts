@@ -2,6 +2,7 @@ import { Opponent, Move } from './opponent';
 import { VisibleCell } from '../fog_of_war';
 
 export class RandomHunterOpponent implements Opponent {
+  // picks a uniformly random unattacked cell
   async getMove(boardView: VisibleCell[][]): Promise<Move> {
     const validCells: Move[] = [];
 

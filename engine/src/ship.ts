@@ -10,8 +10,8 @@ export class Ship {
   readonly name: string;
   readonly size: number;
   readonly orientation: Orientation;
-  readonly coordinates: ShipCoordinate[];
-  private hits: Set<string>;
+  readonly coordinates: ShipCoordinate[]; // every cell this ship occupies
+  private hits: Set<string>; // "row,col" keys of coordinates that have been hit
 
   constructor(
     id: string,
@@ -28,6 +28,7 @@ export class Ship {
     this.hits = new Set();
   }
 
+  // lays out `size` consecutive cells from the origin, along the given orientation
   private computeCoordinates(origin: ShipCoordinate): ShipCoordinate[] {
     const coords: ShipCoordinate[] = [];
     for (let i = 0; i < this.size; i++) {
@@ -40,6 +41,7 @@ export class Ship {
     return coords;
   }
 
+  // records a hit if (row, col) belongs to this ship, returns whether it did
   registerHit(row: number, col: number): boolean {
     const key = `${row},${col}`;
     const isPartOfShip = this.coordinates.some((c) => c.row === row && c.col === col);
@@ -50,6 +52,7 @@ export class Ship {
     return false;
   }
 
+  // true once every coordinate of the ship has been hit
   isSunk(): boolean {
     return this.hits.size === this.size;
   }

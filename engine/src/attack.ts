@@ -9,6 +9,7 @@ export interface AttackOutcome {
   gameOver: boolean;
 }
 
+// applies an attack at (row, col) to the board/fleet and reports the outcome
 export function resolveAttack(
   board: Board,
   fleet: Fleet,

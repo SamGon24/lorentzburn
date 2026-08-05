@@ -5,6 +5,9 @@ node_modules/
 dist/
 build/
 
+# Test reports
+engine/html/
+
 # Environment variables
 .env
 .env.local

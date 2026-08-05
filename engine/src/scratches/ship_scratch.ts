@@ -1,6 +1,6 @@
-import { Board } from './board';
-import { Ship } from './ship';
-import { Fleet, FLEET_COMPOSITION } from './fleet';
+import { Board } from '../board';
+import { Ship } from '../ship';
+import { Fleet, FLEET_COMPOSITION } from '../fleet';
 
 const board = new Board(10);
 const fleet = new Fleet(board);

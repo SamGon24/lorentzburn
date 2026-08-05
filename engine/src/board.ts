@@ -45,4 +45,9 @@ export class Board {
   getGrid(): ReadonlyArray<ReadonlyArray<Cell>> {
     return this.grid;
   }
+
+  setCellStatus(row: number, col: number, status: CellStatus): void {
+  const cell = this.getCell(row, col);
+  cell.status = status;
+}
 }

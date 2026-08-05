@@ -1,31 +1,9 @@
 import { Board } from '../board';
-import { Ship } from '../ship';
-import { Fleet, FLEET_COMPOSITION } from '../fleet';
 import { resolveAttack } from '../attack';
 import { getFogOfWarView } from '../fog_of_war';
 import { ProbabilityDensityOpponent } from '../opponent/probability_density';
-
-// places the full fleet at random valid positions
-function setupRandomFleet(board: Board): Fleet {
-  const fleet = new Fleet(board);
-  for (const shipDef of FLEET_COMPOSITION) {
-    let placed = false;
-    while (!placed) {
-      const row = Math.floor(Math.random() * board.size);
-      const col = Math.floor(Math.random() * board.size);
-      const orientation = Math.random() < 0.5 ? 'horizontal' : 'vertical';
-      try {
-        fleet.placeShip(
-          new Ship(shipDef.name, shipDef.name, shipDef.size, { row, col }, orientation as 'horizontal' | 'vertical')
-        );
-        placed = true;
-      } catch {
-        // invalid spot, retry
-      }
-    }
-  }
-  return fleet;
-}
+import { FLEET_COMPOSITION } from '../fleet';
+import { setupRandomFleet } from './simulation_helpers';
 
 interface GameResult {
   turns: number;

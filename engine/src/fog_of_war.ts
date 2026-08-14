@@ -9,6 +9,7 @@ export interface VisibleCell {
   status: VisibleCellStatus;
 }
 
+// opponent-facing view of the board: hides unhit ships, only reveals hits/misses
 export function getFogOfWarView(board: Board): VisibleCell[][] {
   return board.getGrid().map((row) =>
     row.map((cell) => ({
@@ -19,6 +20,7 @@ export function getFogOfWarView(board: Board): VisibleCell[][] {
   );
 }
 
+// collapses the internal Ship status down to what an opponent is allowed to see
 function mapToVisibleStatus(status: CellStatus): VisibleCellStatus {
   if (status === CellStatus.Hit) return 'hit';
   if (status === CellStatus.Miss) return 'miss';
@@ -34,6 +36,7 @@ export interface FullCell {
   shipId?: string;
 }
 
+// owner-facing view of the board: shows ships, hits, and misses
 export function getOwnBoardView(board: Board, fleet: Fleet): FullCell[][] {
   const grid = board.getGrid();
   return grid.map((row) =>

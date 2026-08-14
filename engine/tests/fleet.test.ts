@@ -27,14 +27,14 @@ describe('canPlaceShip', () => {
     const board = new Board(10);
     const existing = new Ship('s1', 'Interceptor', 2, { row: 0, col: 0 }, 'horizontal');
     const adjacent = new Ship('s2', 'Corvette', 3, { row: 1, col: 0 }, 'horizontal');
-    expect(canPlaceShip(board, adjacent, [existing])).toBe(false);
+    expect(canPlaceShip(board, adjacent, [existing], { strictAdjacency: true })).toBe(false);
   });
 
   it('rejects placement diagonally adjacent to an existing ship', () => {
     const board = new Board(10);
     const existing = new Ship('s1', 'Interceptor', 2, { row: 0, col: 0 }, 'horizontal');
     const diagonal = new Ship('s2', 'Corvette', 3, { row: 1, col: 2 }, 'vertical');
-    expect(canPlaceShip(board, diagonal, [existing])).toBe(false);
+    expect(canPlaceShip(board, diagonal, [existing], { strictAdjacency: true })).toBe(false);
   });
 
   it('allows placement with a gap between ships', () => {
@@ -108,5 +108,19 @@ describe('Fleet', () => {
     const board = new Board(10);
     const fleet = new Fleet(board);
     expect(fleet.allSunk()).toBe(true);
+  });
+
+  it('allows adjacent placement when strictAdjacency is not enabled (default)', () => {
+    const board = new Board(10);
+    const existing = new Ship('s1', 'Interceptor', 2, { row: 0, col: 0 }, 'horizontal');
+    const adjacent = new Ship('s2', 'Corvette', 3, { row: 1, col: 0 }, 'horizontal');
+    expect(canPlaceShip(board, adjacent, [existing])).toBe(true);
+  });
+
+  it('allows diagonally adjacent placement when strictAdjacency is not enabled (default)', () => {
+    const board = new Board(10);
+    const existing = new Ship('s1', 'Interceptor', 2, { row: 0, col: 0 }, 'horizontal');
+    const diagonal = new Ship('s2', 'Corvette', 3, { row: 1, col: 2 }, 'vertical');
+    expect(canPlaceShip(board, diagonal, [existing])).toBe(true);
   });
 });

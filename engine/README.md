@@ -1,6 +1,6 @@
 # Lorentzburn Engine
 
-The core game engine for Lorentzburn, a framework-agnostic TypeScript module with no external dependencies. It implements board state, ship placement, attack resolution, fog-of-war logic, and heuristic AI opponents. Both the frontend and the LLM-based AI opponents build on top of this module.
+The core game engine for Lorentzburn, a framework-agnostic TypeScript module with no external dependencies. It implements board state, ship placement, attack resolution, fog-of-war logic, heuristic AI opponents, and full match orchestration. Both the frontend and the LLM-based AI opponents build on top of this module.
 
 ## Modules
 
@@ -32,7 +32,7 @@ Note: `Ship` has no knowledge of `Board`, it's fully self-contained.
 - `GameRules`, `{ strictAdjacency: boolean }`, toggleable rules for game variants
 - `DEFAULT_GAME_RULES`, defaults to `strictAdjacency: false`, ships may touch by default
 
-Shared across `fleet.ts` (placement validation) and `opponent/probability_density.ts` (heatmap dead zones), so both stay consistent with whatever ruleset is active for a given game.
+Shared across `fleet.ts` (placement validation), `opponent/probability_density.ts` (heatmap dead zones), and `game_session.ts` (passed through to both fleets).
 
 ### `fleet.ts`
 
@@ -44,6 +44,10 @@ Shared across `fleet.ts` (placement validation) and `opponent/probability_densit
   - `getShips()`
   - `isFullyPlaced()`
   - `allSunk()`
+
+### `fleet_setup.ts`
+
+- `randomlyPlaceFleet(fleet, board, rules?)`, places the full standard fleet at random valid positions on the given board, retrying until each ship finds a legal spot. Used by `GameSession` for AI-controlled sides, and by benchmark scratch scripts.
 
 ### `attack.ts`
 
@@ -72,12 +76,26 @@ Heuristic AI opponent strategies, all implementing a shared interface so they, a
 - `probability_density.ts`
   - `ProbabilityDensityOpponent`, builds a heatmap of placement likelihood per cell from the remaining ship sizes, requires placements to pass through any active unresolved hit, and (when `strictAdjacency` is enabled) excludes dead zones around sunk ships, fires at the highest-scoring cell
 
+### `game_session.ts`
+
+Orchestrates a full match between two sides, each either player-controlled (`'player'`) or AI-controlled (an `Opponent` instance). Supports both player-vs-AI and AI-vs-AI.
+
+- `GameSession`
+  - `new GameSession({ boardSize?, rules?, sideA, sideB })`, AI-controlled sides get a randomly placed fleet automatically
+  - `placePlayerFleet(side, ships)`, places ships for a player-controlled side
+  - `attackAsA(row, col)` / `attackAsB(row, col)`, resolves an attack for that side, enforces turn order, throws if called out of turn or after the game has ended
+  - `playAiTurn(side)`, automatically fetches a move from an AI-controlled side and executes it, throws if that side is player-controlled
+  - `isGameOver()`, `getWinner()`, `getCurrentTurn()`
+
+Turns always alternate regardless of hit or miss, classic Battleship turn order, no bonus turn on hit (a possible future `GameRules` addition, not implemented yet).
+
 ## Design notes
 
 - `Board` never stores ship location data. Ship position is only known through `Fleet`/`Ship`. This keeps fog-of-war trivial and guarantees the opponent's board can never accidentally leak ship positions.
 - Adjacency rule: by default, ships may touch, including diagonally. Setting `strictAdjacency: true` in `GameRules` enforces the stricter, non-touching variant. This is a deliberate toggle, not an official Battleship rule, meant to support a future difficulty/settings option.
 - All core types are exported and framework-agnostic, no React, no Node-specific APIs, so this module can be reused by the frontend, the heuristic AI, and the LLM-based AI opponents without modification.
 - All `Opponent` implementations are async by design, even the heuristic ones that resolve instantly, so the game loop can treat heuristic and network-bound LLM opponents identically.
+- `GameSession` uses generic side labels (`A`/`B`) rather than `player`/`ai` naming, this is what allows the same class to support both player-vs-AI and AI-vs-AI without a separate code path.
 
 ## Testing
 

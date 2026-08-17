@@ -1,11 +1,10 @@
-import { Board } from '../board';
-import { Ship } from '../ship';
-import { Fleet, FLEET_COMPOSITION } from '../fleet';
-import { GameRules, DEFAULT_GAME_RULES } from '../game_rules';
+import { Board } from './board';
+import { Ship } from './ship';
+import { Fleet, FLEET_COMPOSITION } from './fleet';
+import { GameRules, DEFAULT_GAME_RULES } from './game_rules';
 
-// places the full fleet at random valid positions, retrying on invalid spots
-export function setupRandomFleet(board: Board, rules: GameRules = DEFAULT_GAME_RULES): Fleet {
-  const fleet = new Fleet(board, rules);
+// places the full fleet at random valid positions on the given board, retrying on invalid spots
+export function randomlyPlaceFleet(fleet: Fleet, board: Board, rules: GameRules = DEFAULT_GAME_RULES): void {
   for (const shipDef of FLEET_COMPOSITION) {
     let placed = false;
     while (!placed) {
@@ -22,5 +21,4 @@ export function setupRandomFleet(board: Board, rules: GameRules = DEFAULT_GAME_R
       }
     }
   }
-  return fleet;
 }

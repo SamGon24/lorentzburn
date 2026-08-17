@@ -1,20 +1,22 @@
 // engine/src/scratches/ai_vs_ai_scratch.ts
 import { Board } from '../board';
-import { FLEET_COMPOSITION } from '../fleet';
+import { Fleet, FLEET_COMPOSITION } from '../fleet';
 import { resolveAttack } from '../attack';
 import { getFogOfWarView } from '../fog_of_war';
 import { Opponent } from '../opponent/opponent';
 import { RandomHunterOpponent } from '../opponent/random_hunter';
 import { HuntTargetOpponent } from '../opponent/hunt_target';
 import { ProbabilityDensityOpponent } from '../opponent/probability_density';
-import { setupRandomFleet } from './simulation_helpers';
+import { randomlyPlaceFleet } from '../fleet_setup';
 
 // plays a single match, alternating turns, returns the winner's name and total turns taken
 async function playMatch(nameA: string, opponentA: Opponent, nameB: string, opponentB: Opponent) {
   const boardA = new Board(10); // A's board, targeted by B
   const boardB = new Board(10); // B's board, targeted by A
-  const fleetA = setupRandomFleet(boardA);
-  const fleetB = setupRandomFleet(boardB);
+  const fleetA = new Fleet(boardA);
+  const fleetB = new Fleet(boardB);
+  randomlyPlaceFleet(fleetA, boardA);
+  randomlyPlaceFleet(fleetB, boardB);
 
   let turns = 0;
   const maxTurns = 400;

@@ -1,9 +1,9 @@
 import { Board } from '../board';
+import { Fleet, FLEET_COMPOSITION } from '../fleet';
 import { resolveAttack } from '../attack';
 import { getFogOfWarView } from '../fog_of_war';
 import { ProbabilityDensityOpponent } from '../opponent/probability_density';
-import { FLEET_COMPOSITION } from '../fleet';
-import { setupRandomFleet } from './simulation_helpers';
+import { randomlyPlaceFleet } from '../fleet_setup';
 
 interface GameResult {
   turns: number;
@@ -13,7 +13,9 @@ interface GameResult {
 // plays one full game and records the outcome
 async function playGame(): Promise<GameResult> {
   const board = new Board(10);
-  const fleet = setupRandomFleet(board);
+  const fleet = new Fleet(board);
+  randomlyPlaceFleet(fleet, board);
+
   const shipSizes = FLEET_COMPOSITION.map((s) => s.size);
   const opponent = new ProbabilityDensityOpponent(shipSizes);
 

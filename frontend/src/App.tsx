@@ -10,6 +10,7 @@ import type { LogEntry } from './components/AttackLog';
 import { PlacementScreen } from './screens/PlacementScreen';
 import { GameScreen } from './screens/GameScreen';
 import { GameOverScreen } from './screens/GameOverScreen';
+import { HowItWorks } from './components/HowItWorks';
 
 const RULES = DEFAULT_GAME_RULES;
 
@@ -81,6 +82,8 @@ function App() {
           />
         )}
       </main>
+
+      <HowItWorks />
     </div>
   );
 }

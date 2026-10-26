@@ -1,6 +1,6 @@
 import { useReducer, useState } from 'react';
 import { getFogOfWarView, getOwnBoardView } from 'engine';
-import type { GameSession, Side } from 'engine';
+import type { Fleet, GameSession, Side } from 'engine';
 import { Board } from '../components/Board';
 import { AttackLog, type LogEntry } from '../components/AttackLog';
 
@@ -12,6 +12,13 @@ interface GameScreenProps {
 }
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// sunk ships are public knowledge, so this is safe to show for the enemy fleet too
+function afloat(fleet: Fleet): string {
+  const ships = fleet.getShips();
+  const remaining = ships.filter((ship) => !ship.isSunk()).length;
+  return `${remaining} of ${ships.length} ships afloat`;
+}
 
 export function GameScreen({ session, onGameOver }: GameScreenProps) {
   const [log, setLog] = useState<LogEntry[]>([]);
@@ -63,32 +70,47 @@ export function GameScreen({ session, onGameOver }: GameScreenProps) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <p
-        className={`rounded px-4 py-2 font-semibold ${
-          playerTurn ? 'bg-sky-100 text-sky-800' : 'bg-amber-100 text-amber-800'
-        }`}
-      >
-        {playerTurn
-          ? 'Your turn, pick a target on the enemy board'
-          : 'Enemy is targeting…'}
-      </p>
+    <div className="grid gap-10 md:grid-cols-[minmax(0,22rem)_minmax(0,34rem)]">
+      <div className="space-y-8">
+        <div aria-live="polite">
+          <p className="flex items-center gap-3 font-display text-lg">
+            <span
+              aria-hidden="true"
+              className={`size-2.5 rounded-full ${
+                playerTurn ? 'bg-reactor' : 'bg-plot motion-safe:animate-pulse'
+              }`}
+            />
+            {playerTurn ? 'Your shot' : 'Enemy is aiming'}
+          </p>
+          <p className="mt-1 pl-5.5 text-plot">
+            {playerTurn
+              ? 'Pick a square on the enemy grid.'
+              : 'The enemy picks its target.'}
+          </p>
+        </div>
 
-      <div className="flex w-full flex-col items-center gap-8 md:flex-row md:items-start md:justify-center">
         <Board
           title="Your fleet"
+          meta={afloat(session.fleetA)}
           cells={getOwnBoardView(session.boardA, session.fleetA)}
+          animate
         />
+
+        <AttackLog entries={log} className="hidden md:block" />
+      </div>
+
+      <div className="space-y-8 max-md:-order-1 md:pt-14">
         <Board
-          title="Enemy waters"
+          title="Enemy fleet"
+          meta={afloat(session.fleetB)}
           cells={getFogOfWarView(session.boardB)}
+          animate
           // already-attacked cells are blocked here, the engine would otherwise still pass the turn
           isCellDisabled={(cell) => !playerTurn || cell.status !== 'empty'}
           onCellClick={handleAttack}
         />
+        <AttackLog entries={log} className="md:hidden" />
       </div>
-
-      <AttackLog entries={log} />
     </div>
   );
 }

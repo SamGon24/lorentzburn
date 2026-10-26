@@ -11,45 +11,57 @@ export interface LogEntry {
 
 interface AttackLogProps {
   entries: LogEntry[];
+  className?: string;
 }
 
 function describe(entry: LogEntry): string {
-  const attacker = entry.side === 'A' ? 'You' : 'Enemy';
-  const coord = formatCoord(entry.row, entry.col);
-
   if (entry.result === 'sunk') {
     const owner = entry.side === 'A' ? 'their' : 'your';
-    return `${attacker} fired at ${coord}, sunk ${owner} ${entry.shipName}!`;
+    return `Sank ${owner} ${entry.shipName}`;
   }
-  return `${attacker} fired at ${coord}, ${entry.result}`;
+  if (entry.result === 'hit') return 'Hit';
+  if (entry.result === 'miss') return 'Miss';
+  return 'Already targeted';
 }
 
 const RESULT_CLASSES: Record<AttackResult, string> = {
-  hit: 'text-red-600',
-  sunk: 'font-semibold text-red-700',
-  miss: 'text-slate-500',
-  'already-attacked': 'text-slate-400',
+  hit: 'text-reactor',
+  sunk: 'font-semibold text-reactor',
+  miss: 'text-plot',
+  'already-attacked': 'text-plot',
 };
 
 // running feed of attack results, newest first
-export function AttackLog({ entries }: AttackLogProps) {
+export function AttackLog({ entries, className = '' }: AttackLogProps) {
   return (
-    <div className="w-full max-w-md">
-      <h2 className="mb-2 text-lg font-semibold">Battle log</h2>
+    <section className={`w-full ${className}`}>
+      <h2 className="mb-3 text-lg font-semibold">Combat log</h2>
       {entries.length === 0 ? (
-        <p className="text-sm text-slate-500">No shots fired yet.</p>
+        <p className="text-sm text-plot">
+          Shots from both fleets show up here.
+        </p>
       ) : (
-        <ol className="max-h-64 space-y-1 overflow-y-auto rounded border border-slate-200 bg-white p-2 text-sm">
+        <ol className="max-h-72 overflow-y-auto border-t border-grid text-sm">
           {entries
             .map((entry, index) => (
-              <li key={index} className={RESULT_CLASSES[entry.result]}>
-                <span className="mr-2 text-slate-400">{index + 1}.</span>
-                {describe(entry)}
+              <li
+                key={index}
+                className="grid grid-cols-[3.5rem_2.5rem_1fr] gap-2 border-b border-grid/60 py-1.5 tabular-nums"
+              >
+                <span
+                  className={entry.side === 'A' ? 'text-bone' : 'text-plot'}
+                >
+                  {entry.side === 'A' ? 'You' : 'Enemy'}
+                </span>
+                <span>{formatCoord(entry.row, entry.col)}</span>
+                <span className={RESULT_CLASSES[entry.result]}>
+                  {describe(entry)}
+                </span>
               </li>
             ))
             .reverse()}
         </ol>
       )}
-    </div>
+    </section>
   );
 }

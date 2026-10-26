@@ -45,12 +45,14 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900">
-      <header className="mb-8 text-center">
-        <h1 className="text-3xl font-bold">Lorentzburn</h1>
+    <div className="min-h-screen px-4 pt-8 pb-16 md:px-10">
+      <header className="mx-auto mb-10 max-w-6xl">
+        <h1 className="font-display text-xl tracking-[0.12em] md:text-2xl">
+          Lorentzburn
+        </h1>
       </header>
 
-      <main className="mx-auto max-w-5xl">
+      <main className="mx-auto max-w-6xl">
         {phase.name === 'placement' && (
           <PlacementScreen
             board={session.boardA}

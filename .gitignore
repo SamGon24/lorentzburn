@@ -5,6 +5,9 @@ node_modules/
 dist/
 build/
 
+# Claude skills (UI)
+.claude
+
 # Test reports
 engine/html/
 

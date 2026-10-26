@@ -47,8 +47,12 @@ function App() {
   return (
     <div className="min-h-screen px-4 pt-8 pb-16 md:px-10">
       <header className="mx-auto mb-10 max-w-6xl">
-        <h1 className="font-display text-xl tracking-[0.12em] md:text-2xl">
-          Lorentzburn
+        <h1>
+          <img
+            src="/logo.png"
+            alt="Lorentzburn"
+            className="h-auto w-full max-w-sm md:max-w-md"
+          />
         </h1>
       </header>
 

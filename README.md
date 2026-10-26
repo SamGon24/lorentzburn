@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="branding/logo-dark.png" alt="Lorentzburn" width="640">
+</p>
+
 # Lorentzburn
 
 A spaceship-themed (inspired by The Expanse book series), Battleship-style strategy game built as a learning project exploring both algorithmic and LLM-based AI opponent design.

@@ -10,6 +10,7 @@ import type { LogEntry } from './components/AttackLog';
 import { PlacementScreen } from './screens/PlacementScreen';
 import { GameScreen } from './screens/GameScreen';
 import { GameOverScreen } from './screens/GameOverScreen';
+import { HowItWorks } from './components/HowItWorks';
 
 const RULES = DEFAULT_GAME_RULES;
 
@@ -45,12 +46,18 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900">
-      <header className="mb-8 text-center">
-        <h1 className="text-3xl font-bold">Lorentzburn</h1>
+    <div className="min-h-screen px-4 pt-8 pb-16 md:px-10">
+      <header className="mx-auto mb-10 max-w-6xl">
+        <h1>
+          <img
+            src="/logo.png"
+            alt="Lorentzburn"
+            className="h-auto w-full max-w-sm md:max-w-md"
+          />
+        </h1>
       </header>
 
-      <main className="mx-auto max-w-5xl">
+      <main className="mx-auto max-w-6xl">
         {phase.name === 'placement' && (
           <PlacementScreen
             board={session.boardA}
@@ -75,6 +82,8 @@ function App() {
           />
         )}
       </main>
+
+      <HowItWorks />
     </div>
   );
 }

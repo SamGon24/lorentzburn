@@ -1,61 +1,77 @@
+import type { CSSProperties } from 'react';
 import type { FullCellStatus } from 'engine';
 
 export type CellHighlight = 'valid' | 'invalid';
 
+// which orthogonal neighbors belong to the same hull, so a ship draws as one continuous shape
+export interface HullSides {
+  up: boolean;
+  down: boolean;
+  left: boolean;
+  right: boolean;
+}
+
 interface CellProps {
   status: FullCellStatus;
+  label: string;
+  hull?: HullSides; // set when this cell is part of a ship or a placement preview
   highlight?: CellHighlight;
   disabled?: boolean;
-  label: string;
+  animate?: boolean; // play the impact flare when a hit lands
   onClick?: () => void;
   onMouseEnter?: () => void;
 }
 
-const STATUS_CLASSES: Record<FullCellStatus, string> = {
-  empty: 'bg-sky-100',
-  ship: 'bg-slate-500',
-  hit: 'bg-red-500 text-white',
-  miss: 'bg-slate-200 text-slate-500',
-};
+const HULL_INSET = '22%';
+const JOIN = '-1px'; // overlaps the grid line so neighboring segments meet
 
-const HIGHLIGHT_CLASSES: Record<CellHighlight, string> = {
-  valid: 'bg-emerald-300',
-  invalid: 'bg-red-300',
-};
+// connected sides run to the cell edge, free sides are inset, corners round only where both sides are free
+function hullStyle(sides: HullSides): CSSProperties {
+  const round = (a: boolean, b: boolean) => (!a && !b ? '999px' : '0');
+  return {
+    top: sides.up ? JOIN : HULL_INSET,
+    bottom: sides.down ? JOIN : HULL_INSET,
+    left: sides.left ? JOIN : HULL_INSET,
+    right: sides.right ? JOIN : HULL_INSET,
+    borderTopLeftRadius: round(sides.up, sides.left),
+    borderTopRightRadius: round(sides.up, sides.right),
+    borderBottomLeftRadius: round(sides.down, sides.left),
+    borderBottomRightRadius: round(sides.down, sides.right),
+  };
+}
 
-const STATUS_MARKS: Record<FullCellStatus, string> = {
-  empty: '',
-  ship: '',
-  hit: '✕',
-  miss: '•',
-};
-
-// a single grid square, highlight (placement preview) takes precedence over status color
 export function Cell({
   status,
+  label,
+  hull,
   highlight,
   disabled,
-  label,
+  animate,
   onClick,
   onMouseEnter,
 }: CellProps) {
-  const color = highlight
-    ? HIGHLIGHT_CLASSES[highlight]
-    : STATUS_CLASSES[status];
-  const interactive = onClick && !disabled;
+  const target = !!onClick && !disabled;
+  const hullClass = highlight
+    ? `hull hull-preview-${highlight}`
+    : status === 'hit'
+      ? 'hull hull-damaged'
+      : 'hull';
 
   return (
     <button
       type="button"
-      aria-label={`${label} ${status}`}
+      className="plot-cell"
+      data-target={target || undefined}
+      aria-label={`${label}, ${status}`}
       disabled={disabled}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
-      className={`flex aspect-square items-center justify-center rounded-sm text-sm font-bold ${color} ${
-        interactive ? 'cursor-pointer hover:brightness-90' : 'cursor-default'
-      }`}
     >
-      {STATUS_MARKS[status]}
+      {hull && <span className={hullClass} style={hullStyle(hull)} />}
+      {status === 'hit' && (
+        <span className={animate ? 'impact impact-animate' : 'impact'} />
+      )}
+      {status === 'miss' && <span className="miss-ring" />}
     </button>
   );
 }

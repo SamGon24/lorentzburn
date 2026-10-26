@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="branding/logo-dark.png" alt="Lorentzburn" width="640">
+</p>
+
 # Lorentzburn
 
 A spaceship-themed (inspired by The Expanse book series), Battleship-style strategy game built as a learning project exploring both algorithmic and LLM-based AI opponent design.
@@ -33,11 +37,27 @@ Early development, core game engine in progress.
 
 ## Getting Started
 
+Run all commands from the repo root. It's an npm workspaces monorepo, so a single install covers both `engine` and `frontend`.
+
 ```bash
-npm install
+npm install              # install dependencies for all workspaces
+npm run dev -w frontend  # build the engine, then start the Vite dev server
 ```
 
-More setup instructions coming as the project develops.
+Then open the URL Vite prints (usually http://localhost:5173).
+
+The frontend's `predev` / `prebuild` hooks compile the engine automatically, so there's no separate engine build step.
+
+### Other commands
+
+| Command | What it does |
+| --- | --- |
+| `npm run build -w frontend` | Production build (engine + frontend) into `frontend/dist` |
+| `npm run preview -w frontend` | Serve the production build locally |
+| `npm test -w engine` | Run the engine test suite (Vitest) |
+| `npm run test:watch -w engine` | Run engine tests in watch mode |
+| `npm run lint` | Lint the engine source |
+| `npm run format` | Format the repo with Prettier |
 
 ## License
 

@@ -1,1 +1,131 @@
 @import 'tailwindcss';
+
+@theme {
+  --color-void: #10292c;
+  --color-panel: #153539;
+  --color-grid: #2b5357;
+  --color-plot: #79a8a3;
+  --color-bone: #dcdfd2;
+  --color-char: #6b5446;
+  --color-reactor: #ff8a3d;
+
+  --font-display: 'Michroma', sans-serif;
+  --font-body: 'Barlow Semi Condensed', sans-serif;
+}
+
+@layer base {
+  body {
+    background: var(--color-void);
+    color: var(--color-bone);
+    font-family: var(--font-body);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-reactor);
+    outline-offset: 2px;
+  }
+}
+
+/* tactical plot cells, ships are drawn as continuous hulls across neighboring cells */
+.plot-cell {
+  position: relative;
+  aspect-ratio: 1;
+  border-right: 1px solid var(--color-grid);
+  border-bottom: 1px solid var(--color-grid);
+}
+
+.plot-cell:focus-visible {
+  outline-offset: -2px;
+  z-index: 2;
+}
+
+.plot-cell[data-target] {
+  cursor: crosshair;
+}
+
+/* targeting reticle, corner brackets drawn with gradients */
+.plot-cell[data-target]:hover::before,
+.plot-cell[data-target]:focus-visible::before {
+  --c: var(--color-reactor);
+  content: '';
+  position: absolute;
+  inset: 16%;
+  background:
+    linear-gradient(var(--c), var(--c)) top left / 30% 2px no-repeat,
+    linear-gradient(var(--c), var(--c)) top left / 2px 30% no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / 30% 2px no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / 2px 30% no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / 30% 2px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / 2px 30% no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / 30% 2px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / 2px 30% no-repeat;
+}
+
+.hull {
+  position: absolute;
+  background: var(--color-bone);
+}
+
+.hull-damaged {
+  background: var(--color-char);
+}
+
+.hull-preview-valid {
+  background: color-mix(in oklab, var(--color-bone) 45%, transparent);
+}
+
+.hull-preview-invalid {
+  background: color-mix(in oklab, var(--color-reactor) 45%, transparent);
+}
+
+.impact {
+  position: absolute;
+  inset: 32%;
+  z-index: 1;
+  border-radius: 999px;
+  background: var(--color-reactor);
+  box-shadow: 0 0 0.75rem 0.15rem
+    color-mix(in oklab, var(--color-reactor) 60%, transparent);
+}
+
+.impact-animate {
+  animation: impact 420ms ease-out;
+}
+
+@keyframes impact {
+  from {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.miss-ring {
+  position: absolute;
+  inset: 38%;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-plot);
+}
+
+/* angled corners for the primary action, like a console key */
+.chamfer {
+  clip-path: polygon(
+    0.5rem 0,
+    100% 0,
+    100% calc(100% - 0.5rem),
+    calc(100% - 0.5rem) 100%,
+    0 100%,
+    0 0.5rem
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .impact-animate {
+    animation: none;
+  }
+}

@@ -34,6 +34,9 @@ function buildCells(size: number, ships: Ship[]): FullCell[][] {
   );
 }
 
+const SECONDARY_BUTTON =
+  'rounded-sm border border-grid px-3 py-1.5 text-sm hover:border-plot disabled:cursor-not-allowed disabled:opacity-40';
+
 // lets the player place the standard fleet one ship at a time, in FLEET_COMPOSITION order
 export function PlacementScreen({
   board,
@@ -91,7 +94,7 @@ export function PlacementScreen({
     const ship = buildShip({ row, col });
     if (!canPlaceShip(board, ship, ships, rules)) {
       setError(
-        `The ${nextShip.name} can't go there, it's out of bounds or overlapping another ship.`
+        `The ${nextShip.name} doesn't fit there. It would leave the grid or overlap another ship.`
       );
       return;
     }
@@ -118,9 +121,8 @@ export function PlacementScreen({
   };
 
   return (
-    <div className="flex flex-col items-center gap-6 md:flex-row md:items-start md:justify-center">
+    <div className="grid gap-10 md:grid-cols-[minmax(0,34rem)_minmax(0,20rem)]">
       <Board
-        title="Place your fleet"
         cells={buildCells(board.size, ships)}
         highlights={highlights}
         isCellDisabled={() => fullyPlaced}
@@ -129,49 +131,67 @@ export function PlacementScreen({
         onMouseLeave={() => setHover(null)}
       />
 
-      <div className="w-full max-w-xs space-y-4">
+      <div className="space-y-6 md:pt-8">
         <div>
-          <h2 className="mb-2 text-lg font-semibold">Fleet</h2>
-          <ul className="space-y-1 text-sm">
-            {FLEET_COMPOSITION.map((def, index) => (
-              <li
-                key={def.name}
-                className={
-                  index < ships.length
-                    ? 'text-slate-400 line-through'
-                    : index === ships.length
-                      ? 'font-semibold text-sky-700'
-                      : ''
-                }
-              >
-                {def.name} ({def.size})
-              </li>
-            ))}
-          </ul>
+          <h2 className="font-display text-lg">Position your fleet</h2>
+          <p className="mt-2 text-plot">
+            {fullyPlaced
+              ? 'Every ship is in place. Start the match when you are ready.'
+              : `Click a square to place your ${nextShip.name}. Press R to rotate it.`}
+          </p>
         </div>
 
-        {!fullyPlaced && (
-          <p className="text-sm">
-            Placing <span className="font-semibold">{nextShip.name}</span>,{' '}
-            {orientation}.
+        <ul className="space-y-2.5">
+          {FLEET_COMPOSITION.map((def, index) => {
+            const placed = index < ships.length;
+            const current = index === ships.length;
+            return (
+              <li
+                key={def.name}
+                className={`flex items-center justify-between gap-4 ${
+                  placed
+                    ? 'text-plot'
+                    : current
+                      ? 'font-semibold'
+                      : 'text-plot/70'
+                }`}
+              >
+                <span>
+                  {def.name}
+                  {placed && <span className="sr-only">, placed</span>}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className={`h-2 rounded-full ${
+                    placed ? 'bg-plot' : current ? 'bg-bone' : 'bg-grid'
+                  }`}
+                  style={{ width: `${def.size * 1.25}rem` }}
+                />
+              </li>
+            );
+          })}
+        </ul>
+
+        {error && (
+          <p role="alert" className="text-sm text-reactor">
+            {error}
           </p>
         )}
-        {error && <p className="text-sm text-red-600">{error}</p>}
 
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={rotate}
             disabled={fullyPlaced}
-            className="rounded bg-slate-200 px-3 py-1.5 text-sm hover:bg-slate-300 disabled:opacity-50"
+            className={SECONDARY_BUTTON}
           >
-            Rotate (R)
+            Rotate to {orientation === 'horizontal' ? 'vertical' : 'horizontal'}
           </button>
           <button
             type="button"
             onClick={handleUndo}
             disabled={ships.length === 0}
-            className="rounded bg-slate-200 px-3 py-1.5 text-sm hover:bg-slate-300 disabled:opacity-50"
+            className={SECONDARY_BUTTON}
           >
             Undo
           </button>
@@ -179,16 +199,16 @@ export function PlacementScreen({
             type="button"
             onClick={handleClear}
             disabled={ships.length === 0}
-            className="rounded bg-slate-200 px-3 py-1.5 text-sm hover:bg-slate-300 disabled:opacity-50"
+            className={SECONDARY_BUTTON}
           >
             Clear
           </button>
           <button
             type="button"
             onClick={handleRandomize}
-            className="rounded bg-slate-200 px-3 py-1.5 text-sm hover:bg-slate-300"
+            className={SECONDARY_BUTTON}
           >
-            Randomize
+            Place randomly
           </button>
         </div>
 
@@ -196,9 +216,9 @@ export function PlacementScreen({
           type="button"
           onClick={() => onConfirm(ships)}
           disabled={!fullyPlaced}
-          className="w-full rounded bg-sky-600 px-4 py-2 font-semibold text-white hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="chamfer w-full bg-reactor px-4 py-3 font-semibold text-void hover:brightness-110 disabled:cursor-not-allowed disabled:bg-grid disabled:text-plot"
         >
-          {fullyPlaced ? 'Start match' : 'Place all ships to start'}
+          Start match
         </button>
       </div>
     </div>

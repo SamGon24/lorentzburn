@@ -18,42 +18,49 @@ export function GameOverScreen({
   onRestart,
 }: GameOverScreenProps) {
   const playerWon = winner === 'A';
-  const playerShots = log.filter((entry) => entry.side === 'A').length;
+  const playerShots = log.filter((entry) => entry.side === 'A');
+  const playerHits = playerShots.filter(
+    (entry) => entry.result === 'hit' || entry.result === 'sunk'
+  ).length;
+  const accuracy = playerShots.length
+    ? Math.round((playerHits / playerShots.length) * 100)
+    : 0;
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <div className="text-center">
+    <div className="space-y-12">
+      <div className="max-w-2xl">
         <h2
-          className={`text-3xl font-bold ${playerWon ? 'text-emerald-600' : 'text-red-600'}`}
+          className={`font-display text-3xl leading-tight md:text-5xl ${
+            playerWon ? 'text-reactor' : 'text-bone'
+          }`}
         >
-          {playerWon ? 'Victory!' : 'Defeat'}
+          {playerWon ? 'Enemy fleet destroyed' : 'Your fleet was destroyed'}
         </h2>
-        <p className="mt-1 text-slate-600">
-          {playerWon
-            ? `You destroyed the enemy fleet in ${playerShots} shots.`
-            : 'The enemy destroyed your fleet.'}
+        <p className="mt-4 text-lg text-plot">
+          You fired {playerShots.length} shots and hit with {accuracy}% of them.
         </p>
         <button
           type="button"
           onClick={onRestart}
-          className="mt-4 rounded bg-sky-600 px-6 py-2 font-semibold text-white hover:bg-sky-700"
+          className="chamfer mt-6 bg-reactor px-8 py-3 font-semibold text-void hover:brightness-110"
         >
           Play again
         </button>
       </div>
 
-      <div className="flex w-full flex-col items-center gap-8 md:flex-row md:items-start md:justify-center">
+      <div className="grid gap-10 md:grid-cols-2">
         <Board
           title="Your fleet"
           cells={getOwnBoardView(session.boardA, session.fleetA)}
         />
         <Board
           title="Enemy fleet"
+          meta="Positions revealed"
           cells={getOwnBoardView(session.boardB, session.fleetB)}
         />
       </div>
 
-      <AttackLog entries={log} />
+      <AttackLog entries={log} className="max-w-xl" />
     </div>
   );
 }
